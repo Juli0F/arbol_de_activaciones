@@ -1,0 +1,51 @@
+programa NOMBRE
+
+	procedimiento NOMBRE (param)
+	begin
+		NOMBRE2(02);
+		NOMBRE3(13);
+	end
+
+	procedimiento NOMBRE2 (param)
+	begin
+		NOMBRE3(23);
+	end
+
+	procedimiento NOMBRE3 (param)
+	begin
+		x : integer;
+	end
+
+
+begin
+	x : integer;
+	y : integer;
+
+	NOMBRE(3);
+
+endprograma NOMBRE
+
+	procedimiento NOMBRE (param)
+	begin
+		NOMBRE2(02);
+		NOMBRE3(13);
+	end
+
+	procedimiento NOMBRE2 (param)
+	begin
+		NOMBRE3(23);
+	end
+
+	procedimiento NOMBRE3 (param)
+	begin
+		x : integer;
+	end
+
+
+begin
+	x : integer;
+	y : integer;
+
+	NOMBRE(3);
+
+end

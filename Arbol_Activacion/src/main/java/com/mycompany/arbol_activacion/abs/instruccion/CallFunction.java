@@ -21,11 +21,13 @@ public class CallFunction extends Instruccion {
     private String id;
     private List<Integer> lst;
     private String parametros;
+    private int cont ;
 
     public CallFunction(String id, List<Integer> lst, int fila, int columna) {
         super(fila, columna);
         this.id = id;
         this.lst = lst;
+        cont = 0;
     }
 
     public String getId() {
@@ -46,7 +48,9 @@ public class CallFunction extends Instruccion {
 
     @Override
     public Object interpretar(Tabla tabla, Arbol arbol) {
-        Function functionResult = (Function) arbol.getFunction(id, (lst == null) ? 0 : lst.size());
+        
+        Function functionResult = (Function) arbol.getFunction(this.id, (this.lst == null) ? 0 : this.lst.size());
+        
         if (functionResult == null) {
             arbol.getExcepciones().add(new Exception("No Existe Funcion"));
             return false;
@@ -61,21 +65,25 @@ public class CallFunction extends Instruccion {
     @Override
     public Nodo getNodo(Arbol arbol) {
 
-        Function funcion = (Function) arbol.getFunction(id, (lst == null) ? 0 : lst.size());
-        this.parametros = this.id+" ( ";
-
+        Function funcion = (Function) arbol.getFunction(this.id, (this.lst == null) ? 0 : this.lst.size());
+        this.parametros = this.id + " ( ";
+        
         if (funcion != null) {
-
+            
             funcion.getParameters().forEach(p -> {
-                parametros += p;
+                parametros += p+" = "+lst.get(cont);
+                cont++;
 
             });
-            
-            Nodo nodo = new Nodo(parametros+" )");
-            nodo.addHijoNodo(funcion.getNodo(arbol));
+
+            Nodo nodo = new Nodo(parametros + " )");
+            Nodo nodFuncion = funcion.getNodo(arbol);
+            if (nodFuncion != null) {
+                nodo.addHijoNodo(nodFuncion);
+            }
             return nodo;
         }
-        
+
         return null;
     }
 

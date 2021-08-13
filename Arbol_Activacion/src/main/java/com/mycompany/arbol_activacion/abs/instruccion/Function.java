@@ -61,13 +61,13 @@ public class Function extends Instruccion {
             boolean err = false;
 
             instrucciones.forEach(x -> {
-                System.out.println("Interpretando: " + x.getClass().getSimpleName());
-                System.out.println("->" + x.getClass().getTypeName());
-                if (x instanceof Programa) {
-                    System.out.println("Program dentro de una funcion");
-                } else {
 
-                    x.interpretar(nueva, arbol);
+                if (!(x instanceof Programa)) {
+                    if (x != null) {
+                        var v = ((Instruccion) x).interpretar(nueva, arbol);
+                        System.out.println("v" + v);
+                    }
+
                 }
             });
 
@@ -78,31 +78,33 @@ public class Function extends Instruccion {
 
     @Override
     public Nodo getNodo(Arbol arbol) {
-        Nodo nodo = new Nodo("Funcion ");
-
-        this.parametros = id + "( ";
-        if (this.parameters != null) {
-            this.parameters.forEach(x -> {
-                parametros += x + " ";
-            });
-        }
-        this.parametros += " )";
-
-        nodo.addHijo(parametros);
-
-        if (instrucciones != null) {
-            this.instrucciones.forEach(callFUnction -> {
-                if (callFUnction instanceof CallFunction call) {
+        
+//        Nodo nodo = new Nodo("Funcion ");
+//        this.parametros = id + "( ";
+//        if (this.parameters != null) {
+//            this.parameters.forEach(x -> {
+//                parametros += x + " ";
+//            });
+//        }
+//        this.parametros += " )";
+//
+//        nodo.addHijo(parametros);
+Nodo nodo = new Nodo("Llama a:");
+        if (this.instrucciones != null) {
+            
+            this.instrucciones.forEach(callFUnction -> {             
+                if (callFUnction instanceof CallFunction ) {
+                    CallFunction call = (CallFunction) callFUnction;
                     Nodo callNodo = call.getNodo(arbol);
-
+                    
                     if (callNodo != null) {
                         nodo.addHijoNodo(callNodo);
                     }
-
-                }
+                }        
             });
+            return nodo;
         }
-        return nodo;
+        return null;
     }
 
 }

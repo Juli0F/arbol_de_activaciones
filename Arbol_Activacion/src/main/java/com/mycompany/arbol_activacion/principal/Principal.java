@@ -39,6 +39,7 @@ public class Principal {
 
             Tabla tabla = new Tabla(null, "global");
             Arbol ast = new Arbol(instruccion, null, null);
+            
 
             ast.getInstruccion().forEach(inst -> {
 
@@ -71,13 +72,16 @@ public class Principal {
             
             
             ast.getInstruccion().forEach(inst -> {
-
+                System.out.println("lst get nodo");
                 if ((inst instanceof Programa) && contador == 0) {
-
+                    //contador = 1;
+                    
                     Programa programa = (Programa) inst;
 
                     programa.getLstInstrucciones().forEach(fun -> {
+                        System.out.println("Buscando llamadas a funciones");
                         if (fun instanceof CallFunction call) {
+                            System.out.println("Se encontraron llamadas a funciones");
                             Nodo nodo = call.getNodo(ast);
                             if (nodo != null ) {
                                 instNodo.addHijoNodo(nodo);
