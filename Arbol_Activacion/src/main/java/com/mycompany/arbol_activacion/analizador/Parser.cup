@@ -1,0 +1,111 @@
+package com.mycompany.arbol_activacion.analizador;
+
+import com.mycompany.arbol_activacion.abs.Instruccion;
+import com.mycompany.arbol_activacion.abs.instruccion.CallFunction;
+import com.mycompany.arbol_activacion.abs.instruccion.Function;
+import com.mycompany.arbol_activacion.abs.instruccion.Identificador;
+import com.mycompany.arbol_activacion.abs.instruccion.Programa;
+import java.util.ArrayList;
+import java.util.List;
+import java_cup.runtime.Symbol;
+
+
+
+parser code {:
+	public void syntax_error(Symbol s) {
+  expected_token_ids().forEach(x -> {
+            System.out.println("Se esperaba : " + symbl_name_from_id(x));
+        });
+        report_error("Error de sintaxis en linea " + s.left+ " "+s.value+" : "+ symbl_name_from_id(s.sym), null);
+}
+
+public void unrecovered_syntax_error(Symbol s) throws
+  java.lang.Exception {
+  	expected_token_ids().forEach(x -> {
+            System.out.println("Se esperaba : " + symbl_name_from_id(x));
+        });
+        
+  		report_fatal_error(" unrecovered "+ s.left+ " "+s.value+" \n"+ symbl_name_from_id(s.sym), null);
+}
+	:};
+
+
+
+terminal DOT;
+terminal IGUAL;
+terminal PROCEDIMIENTO;
+terminal BEGIN;
+terminal END;
+terminal PROGRAMA;
+terminal String ID;
+terminal Integer NUMERO;
+terminal SEMICOLON;
+terminal PAR_A;
+terminal PAR_C;
+terminal SEMI;
+terminal INTEGER;
+
+nonterminal String parameter;
+nonterminal Instruccion inicio;
+nonterminal Instruccion instruccion;
+nonterminal Function new_function;
+nonterminal CallFunction call_function;
+nonterminal Identificador var;
+nonterminal List<String> parameters;
+nonterminal List<Instruccion> instrucciones;
+nonterminal List<Instruccion>bloque;
+nonterminal List<Integer> pass_param;
+
+
+
+start with instrucciones;
+
+
+
+
+instrucciones ::= instrucciones:lst instruccion:element						{:lst.add(element); RESULT = lst;  :}
+                    | instruccion:element 									{:List<Instruccion> inst = new ArrayList<>(); inst.add(element); RESULT = inst;:}
+                    ;
+
+
+instruccion   ::= inicio:inst  												              {:RESULT = inst;:}
+                   | new_function:inst  									          {:RESULT = inst;:}
+                   | call_function:inst SEMICOLON  				          {:RESULT = inst;:}
+                   | var:inst  			SEMICOLON							          {:RESULT = inst;:}
+                   //| asignacion 											{:RESULT = ins;:}
+                   ;
+inicio        ::= PROGRAMA ID:id instrucciones:inst bloque:lst 			{:RESULT = new Programa(String.valueOf(id), lst,inst, idleft, idright);:};
+
+bloque 		  ::= BEGIN instrucciones:inst END 								        {:RESULT = inst;:};
+
+
+new_function  ::=  PROCEDIMIENTO ID:id PAR_A PAR_C bloque:lst				{: RESULT = new Function(id,null,lst,lstleft,lstright);:}	
+				 | PROCEDIMIENTO ID:id PAR_A parameters:p PAR_C bloque:lst  {: RESULT = new Function(id,p,lst,lstleft,lstright);:}	
+				 ;
+
+
+
+parameters 	  ::= parameters:lst SEMI parameter:id 							    {:lst.add(id); RESULT = lst; :}
+				  | parameter:p 											                      {:List<String> lstEnteros = new ArrayList<>(); lstEnteros.add(p); RESULT = lstEnteros; :}
+				  ;
+
+parameter 	  ::= ID:id 													                  {:RESULT = id;:}
+				;
+				  
+
+var 		  ::= ID:id DOT INTEGER											                {:RESULT = new Identificador(id,idleft,idright);:}
+				;
+
+
+
+call_function ::= ID:id PAR_A PAR_C 										{:RESULT = new CallFunction(id, null,idleft,idright);:}
+				 | ID:id PAR_A pass_param:lst PAR_C 						{:RESULT = new CallFunction(id, lst ,idleft,idright);:}
+				 ;
+
+
+pass_param    ::=  pass_param:lst SEMI NUMERO:n								{:lst.add(n); RESULT = lst; :}
+				        | NUMERO:n 												{:List<Integer> enteros = new ArrayList<>(); enteros.add(n); RESULT = enteros; :}
+				  ;
+
+
+
