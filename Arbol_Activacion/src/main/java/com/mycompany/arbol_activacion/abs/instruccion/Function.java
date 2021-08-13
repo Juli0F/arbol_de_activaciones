@@ -93,8 +93,8 @@ Nodo nodo = new Nodo("Llama a:");
         if (this.instrucciones != null) {
             
             this.instrucciones.forEach(callFUnction -> {             
-                if (callFUnction instanceof CallFunction ) {
-                    CallFunction call = (CallFunction) callFUnction;
+                if (callFUnction instanceof CallFunction  call) {
+                    
                     Nodo callNodo = call.getNodo(arbol);
                     
                     if (callNodo != null) {
